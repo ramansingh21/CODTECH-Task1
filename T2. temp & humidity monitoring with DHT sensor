@@ -1,0 +1,57 @@
+/* The code reads temperature and humidity from a DHT22 sensor and displays the values on a 16x2 LCD screen, updating every 2 seconds. */
+
+
+#include <DHT.h>
+#include <LiquidCrystal.h>
+
+// Define DHT sensor type and pin
+#define DHTPIN 2       // Pin connected to the DHT sensor
+#define DHTTYPE DHT22  // Change to DHT22 if using that model
+
+DHT dht(DHTPIN, DHTTYPE); // Initialize DHT sensor
+
+// Initialize the LCD (RS, E, D4, D5, D6, D7)
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+
+void setup() {
+  // Initialize LCD and print a welcome message
+  lcd.begin(16, 2);  // Set up the LCD's number of columns and rows
+  lcd.print("Temp & Humidity");
+  
+  // Start DHT sensor
+  dht.begin();
+
+  // Delay to let the user see the welcome message
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  // Read temperature and humidity
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature(); // Default is Celsius
+  
+  // Check if readings are valid
+  if (isnan(humidity) || isnan(temperature)) {
+    lcd.setCursor(0, 0);
+    lcd.print("Sensor Error");
+    delay(2000);
+    return;
+  }
+  
+  // Display temperature on the first row
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(temperature);
+  lcd.print((char)223); // Print degree symbol
+  lcd.print("C");
+  
+  // Display humidity on the second row
+  lcd.setCursor(0, 1);
+  lcd.print("Humidity: ");
+  lcd.print(humidity);
+  lcd.print("%");
+  
+  // Wait before updating the display
+  delay(2000);
+}
